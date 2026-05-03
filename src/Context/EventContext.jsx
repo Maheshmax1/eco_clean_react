@@ -1,0 +1,128 @@
+import { createContext, useState } from "react";
+
+export const EventContext = createContext();
+
+export const EventProvider = ({ children }) => {
+  const [events, setEvents] = useState([
+    {
+      id: 1,
+      image:
+        "https://thumbs.dreamstime.com/b/environmental-clean-up-26958545.jpg",
+      tag: "ECO-1",
+      title: "Beach Cleanup Drive",
+      desc: "Help clean the beach and protect marine life.",
+      date: "2026-03-10",
+      time: "08:00 - 11:00",
+      status: "completed",
+    },           
+    {
+      id: 2,
+      image:
+        "https://media.river-cleanup.org/20100/conversions/Screenshot-2025-07-09-at-15.49.04-responsive.png",
+      tag: "ECO-2",
+      title: "River Restoration",
+      desc: "Join us to restore polluted rivers.",
+      date: "2026-03-15",
+      time: "09:00 - 12:00",
+      status: "completed",
+    },
+    {
+      id: 3,
+      image:
+        "https://images.stockcake.com/public/8/4/f/84fe7ae7-8fb4-423d-9a95-e73c5651adc5_large/community-cleanup-activity-stockcake.jpg",
+      tag: "ECO-3",
+      title: "Park Cleanup",
+      desc: "Make local parks clean and green.",
+      date: "2026-03-20",
+      time: "07:00 - 10:00",
+      status: "completed",
+    },
+    {
+      id: 4,
+      image:
+        "https://earth5r.org/wp-content/uploads/2024/04/Erth5R-CSR-ESG-Plastic-Free-Campaigns-and-Initiatives-Mumbai-India-1024x576.jpg",
+      tag: "ECO-4",
+      title: "Plastic-Free Campaign",
+      desc: "Spread awareness about plastic pollution.",
+      date: "2026-03-25",
+      time: "10:00 - 01:00",
+      status: "completed",
+    },
+    {
+      id: 5,
+      image:
+        "https://img.freepik.com/free-photo/volunteers-little-kid-planting-tree-covering-hole-ground_482257-91057.jpg?semt=ais_hybrid&w=740&q=80",
+      tag: "ECO-5",
+      title: "Tree Plantation Drive",
+      desc: "Plant trees and save the environment.",
+      date: "2026-04-01",
+      time: "06:00 - 09:00",
+      status: "completed",
+    },
+    {
+      id: 6,
+      image:
+        "https://thumbs.dreamstime.com/b/clean-india-worker-cleaning-garbage-dirty-drain-slum-area-kolkata-50204157.jpg",
+      tag: "ECO-6",
+      title: "City Cleanup Marathon",
+      desc: "Clean streets across the city.",
+      date: "2026-04-20",
+      time: "07:00 - 11:00",
+      status: "upcoming",
+    },
+    {
+      id: 7,
+      image:
+        "https://www.shutterstock.com/image-photo/group-focused-volunteers-diligently-clears-600nw-2436085007.jpg",
+      tag: "ECO-7",
+      title: "Lake Cleanup Drive",
+      desc: "Help clean polluted lakes.",
+      date: "2026-04-22",
+      time: "08:00 - 12:00",
+      status: "upcoming",
+    },
+    {
+      id: 8,
+      image:
+        "https://www.shutterstock.com/image-photo/team-volunteer-cleaning-outdoor-trash-600nw-2704991641.jpg",
+      tag: "ECO-8",
+      title: "Green Earth Campaign",
+      desc: "Promote eco-friendly living.",
+      date: "2026-04-25",
+      time: "09:00 - 11:00",
+      status: "upcoming",
+    },
+    {
+      id: 9,
+      image:
+        "https://www.voltechgroup.com/assets/image/csr/environment/beachclean/3.jpg",
+      tag: "ECO-9",
+      title: "Beach Cleanup 2026",
+      desc: "Join beach cleaning mission.",
+      date: "2026-04-28",
+      time: "10:00 - 01:00",
+      status: "upcoming",
+    },
+    {
+      id: 10,
+      image:
+        "https://media.istockphoto.com/id/1006632972/photo/volunteers-with-garbage-bags.jpg?s=612x612&w=0&k=20&c=Oc8iDPJ4cMFv6RYYS-47NgVTzQoho6ZPC_N2TT9akNQ=",
+      tag: "ECO-10",
+      title: "Community Green Drive",
+      desc: "Unite for a cleaner environment.",
+      date: "2026-05-01",
+      time: "07:00 - 10:00",
+      status: "upcoming",
+    },
+  ]);
+
+  return (
+    <EventContext.Provider value={{ events, setEvents }}>
+      {children}
+    </EventContext.Provider>
+  );
+}; 
+
+
+
+

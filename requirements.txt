@@ -1,0 +1,13 @@
+# for download react app 
+
+npm create vite@latest
+
+# for navigation and router
+
+npm install react-router-dom
+
+# for tailwind css
+
+# for icons 
+lucide -react
+

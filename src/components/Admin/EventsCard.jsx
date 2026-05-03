@@ -23,3 +23,5 @@ function EventCard({ image, title, location, date }) {
 }
 
 export default EventCard;
+
+

@@ -1,7 +1,14 @@
 import React from "react";
+import { useContext } from "react";
 import EventCard from "./EventCard";
+import { EventContext } from "../../Context/EventContext";
 
-function EventsSection({ title, subtitle, data }) {
+function EventsSection({ title, subtitle, filter }) {
+
+  const {events} = useContext(EventContext);
+
+  const filteredEvents = filter ? events.filter((e) =>e.status === filter):events;
+
   return (
     <div className="py-16 px-6">
       
@@ -16,7 +23,7 @@ function EventsSection({ title, subtitle, data }) {
 
       {/* Cards */}
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {data.map((event) => (
+        {filteredEvents.map((event) => (
           <EventCard key={event.id} {...event}
            />
         ))}

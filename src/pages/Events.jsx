@@ -2,15 +2,10 @@ import React, { useState } from "react";
 import EventsSection from "../components/Events_page/EventsSection";
 
 import eventVideo from "../assets/volunteervedio.mp4";
-import { eventsData } from "../data/eventsData";
+
 function Events() {
   
-
-  const [events, setEvents] = useState(eventsData);
-
-  const completedEvents = events.filter((e) => e.status === "completed");
-
-  const upcomingEvents = events.filter((e) => e.status === "upcoming");
+  
 
   return (
     <div className="bg-emerald-50">
@@ -41,16 +36,18 @@ function Events() {
       <EventsSection
         title="Upcoming Events"
         subtitle="Register now for our upcoming community cleanup drives"
-        data={upcomingEvents}
+        filter ="upcoming"
+
       />
 
       <EventsSection
         title="Completed Events"
         subtitle="Our recent successful cleanup initiatives"
-        data={completedEvents}
+        filter ="completed"
       />
     </div>
   );
 }
 
 export default Events;
+

@@ -1,7 +1,57 @@
 import React from "react";
 import { Calendar, MapPin, Clock, Image, FileText, Type } from "lucide-react";
+import * as yup from "yup";
+import { useFormik } from "formik";
 
-function EditOrAddEvent({}) {
+function EditOrAddEvent({ }) {
+  const UpdateEventForm = yup.object({
+    EventTitle: yup
+      .string()
+      .min(5)
+      .max(20)
+      .matches(/^[A-Za-z]+$/g)
+      .required(),
+    EventDesciption: yup.string().min(10).max(200).required(),
+    EventLocation: yup.string().required(),
+    EventDateAndTime: yup.string(),
+    EventStartTime: yup.string(),
+    EventEndTime: yup.string(),
+    EventImage: yup.Image(),
+  });
+
+
+  const formik = useFormik({
+    initialValues: {
+      EventTitle: "",
+      EventDesciption: "",
+      EventLocation: "",
+      EventDateAndTime: "",
+      EventStartTime: "",
+      EventEndTime: "",
+      EventImage: "",
+    },
+    validationSchema: UpdateEventForm,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...FormData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+
+  }
+
+
   return (
     <div className="bg-emerald-50 min-h-screen p-6">
       {/* Header */}
@@ -101,7 +151,7 @@ function EditOrAddEvent({}) {
           {/* Image Upload */}
           <div>
             <label className="flex items-center gap-2 font-medium mb-2">
-              <Image size={18} /> Event Image (optional)
+              <Image size={18} /> Event Image
             </label>
 
             <div className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center text-gray-500 hover:border-emerald-400 transition cursor-pointer">

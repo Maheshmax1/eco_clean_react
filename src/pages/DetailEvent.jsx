@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { eventsData } from '../data/eventsData';
+import { EventContext } from '../Context/EventContext';
+
 
 function DetailEvent() {
   const { id } = useParams();
-  const event = eventsData.find((e) => e.id === parseInt(id));
+
+  const {events} = useContext(EventContext)
+  const event = events.find((e)=>e.id ===parseInt(id))
 
   // local state to simulate joining an event
   const [isRegistered, setIsRegistered] = useState(false);
