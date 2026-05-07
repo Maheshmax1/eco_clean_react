@@ -5,20 +5,30 @@ const Navbar = () => {
   const location = useLocation();
   const path = location.pathname;
 
+  const role = localStorage.getItem("role");
+
   const navItems = [
     { label: "Home", to: "/" },
     { label: "About", to: "/about" },
     { label: "Events", to: "/events" },
     { label: "Contact", to: "/contact" },
-    { label: "Profile", to: "/profile" },
-    { label: "Admin", to: "/admin" },
+
+    // Show Profile only for user
+    ...(role === "volunteer"
+      ? [{ label: "Profile", to: "/profile" }]
+      : []),
+
+    // Show Admin only for admin
+    ...(role === "admin"
+      ? [{ label: "Admin", to: "/admin" }]
+      : []),
   ];
 
   return (
     <header className="sticky top-0 z-50 border-b bg-[#2e8b57] backdrop-blur-xl shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <nav className="flex items-center justify-between">
-          
+
           {/* Logo */}
           <Link
             to="/"
@@ -36,11 +46,10 @@ const Navbar = () => {
               <li key={item.to}>
                 <Link
                   to={item.to}
-                  className={`px-3 py-2 rounded-md transition ${
-                    path === item.to
+                  className={`px-3 py-2 rounded-md transition ${path === item.to
                       ? "bg-emerald-700 text-white"
                       : "text-white hover:text-emerald-200"
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </Link>

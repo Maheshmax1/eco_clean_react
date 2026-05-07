@@ -16,26 +16,37 @@ function ContactFormSection() {
         "I am interested in volunteering for beach cleanup. Please provide more details about the event and how I can participate.",
     },
     {
-      name: "kamalesh",
+      name: "Kamalesh",
       email: "kamalesh@gmail.com",
       message:
         "I am interested in volunteering for beach cleanup. Please provide more details about the event and how I can participate.",
     },
   ];
+
   return (
-    <div className="border-2">
-        <p className="text-center border-b-green-400 mt-2">Contact Form Section</p>
-    <div className="flex p-6  gap-5">
+    <div className="py-8">
       
-      {contactForms.map((form, index) => (
-        <ContactFormCard
-          key={index}
-          name={form.name}
-          email={form.email}
-          message={form.message}
-        />
-      ))}
-    </div>
+      {/* Section Header */}
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          Contact Requests
+        </h2>
+        <p className="text-gray-600">
+          Manage and respond to user inquiries and support requests
+        </p>
+      </div>
+
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {contactForms.map((form, index) => (
+          <ContactFormCard
+            key={index}
+            name={form.name}
+            email={form.email}
+            message={form.message}
+          />
+        ))}
+      </div>
     </div>
   );
 }

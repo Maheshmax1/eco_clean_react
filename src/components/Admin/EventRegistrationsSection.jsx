@@ -28,7 +28,7 @@ function EventRegistrationsSection() {
     ]
   },
   {
-    title: "Save Our River – Cleanup",
+    title: "Save Our River - Cleanup",
     volunteers: [
       {
         name: "hari haran",
@@ -46,14 +46,19 @@ function EventRegistrationsSection() {
   }
 ];
    return (
-    <div className="p-6 bg-slate-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-emerald-700 mb-6">
+    <div className="py-8">
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">
         Event Registrations
-      </h1>
+      </h2>
+      <p className="text-gray-600 mb-8">
+        View all volunteers registered for each event
+      </p>
 
+      <div className="space-y-6">
       {events.map((event, index) => (
         <EventTable key={index} event={event} />
       ))}
+      </div>
     </div>
   );
 }

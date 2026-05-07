@@ -1,181 +1,295 @@
-import React from "react";
+import React,{useContext} from "react";
 import { Calendar, MapPin, Clock, Image, FileText, Type } from "lucide-react";
+import { EventContext } from "../../Context/EventContext";
+
 import * as yup from "yup";
 import { useFormik } from "formik";
 
-function EditOrAddEvent({ }) {
+function EditOrAddEvent({ event }) {
+  const API_URL = "https://full-stack-eco-clean.vercel.app/api/events";
+   
+  const {fetchEvents}=useContext(EventContext);
+  // Validation
   const UpdateEventForm = yup.object({
     EventTitle: yup
       .string()
-      .min(5)
-      .max(20)
-      .matches(/^[A-Za-z]+$/g)
-      .required(),
-    EventDesciption: yup.string().min(10).max(200).required(),
-    EventLocation: yup.string().required(),
-    EventDateAndTime: yup.string(),
-    EventStartTime: yup.string(),
-    EventEndTime: yup.string(),
-    EventImage: yup.Image(),
-  });
+      .min(5, "Minimum 5 characters")
+      .max(50, "Maximum 50 characters")
+      .required("Title is required"),
 
+    EventDesciption: yup
+      .string()
+      .min(10, "Minimum 10 characters")
+      .max(300, "Maximum 300 characters")
+      .required("Description is required"),
+
+    EventLocation: yup.string().required("Location is required"),
+
+    EventDateAndTime: yup.string().required("Date is required"),
+
+    EventStartTime: yup.string().required("Start time required"),
+
+    EventEndTime: yup.string().required("End time required"),
+
+    EventImage: yup.mixed(),
+  });
 
   const formik = useFormik({
     initialValues: {
       EventTitle: "",
-      EventDesciption: "",
+      EventDescription: "",
       EventLocation: "",
       EventDateAndTime: "",
       EventStartTime: "",
       EventEndTime: "",
-      EventImage: "",
+      EventImage: null,
     },
+
     validationSchema: UpdateEventForm,
-    onSubmit: (values) => {
-      console.log(values);
+
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          alert("Please login first");
+          return;
+        }
+
+        // Cloudinary
+        const CLOUDINARY_URL =
+          "https://api.cloudinary.com/v1_1/def2x8hlo/image/upload";
+
+        const CLOUDINARY_UPLOAD_PRESET = "Fullstack_Ecoclean";
+
+        let imageUrl = "";
+
+        // Upload image
+        if (values.EventImage) {
+          const imageData = new FormData();
+
+          imageData.append("file", values.EventImage);
+
+          imageData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+          const cloudinaryResponse = await fetch(CLOUDINARY_URL, {
+            method: "POST",
+            body: imageData,
+          });
+
+          const cloudinaryData = await cloudinaryResponse.json();
+
+          console.log(cloudinaryData);
+
+          imageUrl = cloudinaryData.secure_url;
+        }
+
+        // Backend Request
+        const response = await fetch(API_URL, {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+
+          body: JSON.stringify({
+            title: values.EventTitle,
+
+            description: values.EventDesciption,
+
+            location: values.EventLocation,
+
+            event_date: values.EventDateAndTime,
+
+            start_time: values.EventStartTime,
+
+            end_time: values.EventEndTime,
+
+            image_url: imageUrl,
+          }),
+        });
+
+        const data = await response.json();
+
+        console.log(data);
+
+        if (!response.ok) {
+          alert(data.detail || "Failed to add event");
+          return;
+        }
+
+        alert("Event Added Successfully");
+
+        resetForm();
+        fetchEvents();
+        
+
+      } catch (error) {
+        console.log(error);
+
+        alert("Something went wrong");
+      }
     },
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...FormData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-
-  }
-
-
   return (
-    <div className="bg-emerald-50 min-h-screen p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-emerald-700 flex items-center gap-2">
-          <Calendar /> {event ? "Edit Event" : "Add New Event"}
+    <div className="py-12 bg-white rounded-lg shadow-lg">
+      <div className="max-w-2xl mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl shadow-md p-8 border border-emerald-200">
+        {/* Header */}
+        <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <Calendar className="text-emerald-600" />
+
+          {event ? "Edit Event" : "Create New Event"}
         </h1>
 
-        <p className="text-gray-600 mt-2">
-          Create a new EcoClean community event. Fill in all details accurately.
-        </p>
-
-        <hr className="mt-4" />
-      </div>
-
-      {/* Form Card */}
-      <div className="bg-white p-8 rounded-2xl shadow-md">
-        <form className="flex flex-col gap-6">
-          {/* Event Title */}
+        <form onSubmit={formik.handleSubmit} className="space-y-5">
+          {/* Title */}
           <div>
-            <label className="flex items-center gap-2 font-medium mb-2">
-              <Type size={18} /> Event Title *
+            <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+              <Type size={16} />
+              Event Title
             </label>
 
             <input
               type="text"
-              placeholder="e.g. Beach Cleanup Drive"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              name="EventTitle"
+              placeholder="Enter event title"
+              value={formik.values.EventTitle}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full border-2 border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-emerald-500"
             />
+
+            {formik.touched.EventTitle && formik.errors.EventTitle && (
+              <p className="text-red-500 text-sm mt-1">
+                {formik.errors.EventTitle}
+              </p>
+            )}
           </div>
 
           {/* Description */}
           <div>
-            <label className="flex items-center gap-2 font-medium mb-2">
-              <FileText size={18} /> Description *
+            <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+              <FileText size={16} />
+              Description
             </label>
 
             <textarea
               rows="4"
-              placeholder="Describe the event activity, goals, and what volunteers should bring..."
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              name="EventDesciption"
+              placeholder="Event description"
+              value={formik.values.EventDesciption}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full border-2 border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
             />
+
+            {formik.touched.EventDesciption &&
+              formik.errors.EventDesciption && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formik.errors.EventDesciption}
+                </p>
+              )}
           </div>
 
           {/* Location */}
           <div>
-            <label className="flex items-center gap-2 font-medium mb-2">
-              <MapPin size={18} /> Location *
+            <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+              <MapPin size={16} />
+              Location
             </label>
 
             <input
               type="text"
-              placeholder="e.g. Marina Beach, North End"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              name="EventLocation"
+              placeholder="Enter location"
+              value={formik.values.EventLocation}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full border-2 border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+
+            {formik.touched.EventLocation && formik.errors.EventLocation && (
+              <p className="text-red-500 text-sm mt-1">
+                {formik.errors.EventLocation}
+              </p>
+            )}
+          </div>
+
+          {/* Date */}
+          <div>
+            <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+              <Calendar size={16} />
+              Event Date
+            </label>
+
+            <input
+              type="date"
+              name="EventDateAndTime"
+              value={formik.values.EventDateAndTime}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full border-2 border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
-          {/* Date + Time */}
-          <div className="grid md:grid-cols-3 gap-4">
-            {/* Date */}
+          {/* Time */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="flex items-center gap-2 font-medium mb-2">
-                <Calendar size={18} /> Date *
-              </label>
-
-              <input
-                type="date"
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              />
-            </div>
-
-            {/* Start Time */}
-            <div>
-              <label className="flex items-center gap-2 font-medium mb-2">
-                <Clock size={18} /> Start Time *
+              <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                <Clock size={16} />
+                Start Time
               </label>
 
               <input
                 type="time"
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                name="EventStartTime"
+                value={formik.values.EventStartTime}
+                onChange={formik.handleChange}
+                className="w-full border-2 border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
-            {/* End Time */}
             <div>
-              <label className="flex items-center gap-2 font-medium mb-2">
-                <Clock size={18} /> End Time *
+              <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                <Clock size={16} />
+                End Time
               </label>
 
               <input
                 type="time"
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                name="EventEndTime"
+                value={formik.values.EventEndTime}
+                onChange={formik.handleChange}
+                className="w-full border-2 border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
           </div>
 
-          {/* Image Upload */}
+          {/* Image */}
           <div>
-            <label className="flex items-center gap-2 font-medium mb-2">
-              <Image size={18} /> Event Image
+            <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+              <Image size={16} />
+              Upload Image
             </label>
 
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center text-gray-500 hover:border-emerald-400 transition cursor-pointer">
-              Click to upload or drag & drop
-              <p className="text-sm mt-1">JPG, PNG, WEBP up to 5 MB</p>
-            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                formik.setFieldValue("EventImage", e.target.files[0]);
+              }}
+            />
           </div>
 
-          {/* Buttons */}
-          <div className="flex gap-4 mt-4">
-            <button
-              type="button"
-              className="px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              className="flex-1 bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 transition shadow-md"
-            >
-              + Save Changes
-            </button>
-          </div>
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition"
+          >
+            Save Event
+          </button>
         </form>
       </div>
     </div>

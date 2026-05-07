@@ -8,6 +8,7 @@ import CustomerSupport from "../pages/CustomerSupport";
 import Profile from "../pages/Profile";
 import Admin from "../pages/Admin";
 import DetailEvent from "../pages/DetailEvent";
+import EditEvents from "../pages/EditEvents";
 
 const MainRoutes = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const MainRoutes = createBrowserRouter([
       {
         path:"events/:id",
         element:<DetailEvent/>
+      },
+      {
+        path:"edit-events/:id",
+        element:<EditEvents/>
       },
       {
         path: "contact",

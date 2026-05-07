@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function EventCard({ id, image, tag, title, desc, date, time, status }) {
+function EventCard({ id, image_url, tag, title, desc, date, time, status }) {
 
   const navigate = useNavigate();
 
@@ -14,7 +14,7 @@ function EventCard({ id, image, tag, title, desc, date, time, status }) {
       
       {/* Image */}
       <img
-        src={image}
+        src={image_url}
         alt={title}
         className="w-full h-52 object-cover"
       />
@@ -24,9 +24,6 @@ function EventCard({ id, image, tag, title, desc, date, time, status }) {
         
         {/* Tag + Status */}
         <div className="flex justify-between items-center mb-3">
-          <span className="bg-emerald-700 text-white text-xs px-3 py-1 rounded-full">
-            {tag}
-          </span>
 
           <span
             className={`text-xs px-3 py-1 rounded-full ${

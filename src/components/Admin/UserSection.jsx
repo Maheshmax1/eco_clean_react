@@ -45,46 +45,57 @@ function UserSection() {
   ];
 
   return (
-    <div>
-      <p className="text-center text-green-500 font-bold ">
-        Volunteer Application
+    <div className="py-8">
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        Volunteer Applications
+      </h2>
+      <p className="text-gray-600 mb-8">
+        Track and manage all volunteer registrations
       </p>
 
-      <div className="border border-emerald-100 rounded-lg p-6 bg-emerald-50 shadow-md w-[90%] mx-auto mt-12">
-        <table className="min-w-full">
-          <thead className="bg-emerald-100">
-            <tr className="border-b text-center">
-              <th className="py-2 px-4">ID</th>
-              <th className="py-2 px-4 ">Name</th>
-              <th className="py-2 px-4">Volunteer ID</th>
-              <th className="py-2 px-4">Status</th>
-              <th className="py-2 px-4">Email</th>
-              <th className="py-2 px-4">Contact</th>
+      <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-100 border-b border-gray-300">
+            <tr>
+              <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">ID</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Name</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Volunteer ID</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Status</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Email</th>
+              <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Contact</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200">
             {users.map((user) => (
-              <tr key={user.id}>
-                <td className="py-2 px-4 text-center border-b-1">{user.id}</td>
-                <td className="py-2 px-4 text-center border-b-1">
+              <tr key={user.id} className="hover:bg-gray-50 transition">
+                <td className="py-4 px-6 text-sm text-gray-900 font-medium">{user.id}</td>
+                <td className="py-4 px-6 text-sm text-gray-900 font-semibold">
                   {user.name}
                 </td>
-                <td className="py-2 px-4 text-center border-b-1">
+                <td className="py-4 px-6 text-sm text-gray-700">
                   {user.vol_id}
                 </td>
-                <td className="py-2 px-4 text-center border-b-1">
-                  {user.status}
+                <td className="py-4 px-6 text-sm">
+                  <span className={`px-3 py-1 rounded-full font-semibold text-xs ${
+                    user.status === 'Active' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {user.status}
+                  </span>
                 </td>
-                <td className="py-2 px-4 text-center border-b-1">
+                <td className="py-4 px-6 text-sm text-gray-700">
                   {user.email}
                 </td>
-                <td className="py-2 px-4 text-center border-b-1">
+                <td className="py-4 px-6 text-sm text-gray-700">
                   {user.contact}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
