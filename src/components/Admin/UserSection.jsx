@@ -1,48 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { ENDPOINTS } from "../../api/constants";
 
 function UserSection() {
-  const users = [
-    {
-      id: 1,
-      name: "Mahesh",
-      vol_id: 1001,
-      status: "Active",
-      email: "mahesh@gmail.com",
-      contact: 9176223344,
-    },
-    {
-      id: 2,
-      name: "Hari",
-      vol_id: 1002,
-      status: "Inactive",
-      email: "hari@gmail.com",
-      contact: 9876543210,
-    },
-    {
-      id: 3,
-      name: "kamalesh",
-      vol_id: 1003,
-      status: "Active",
-      email: "kamalesh@gmail.com",
-      contact: 9123456789,
-    },
-    {
-      id: 4,
-      name: "venkatesh",
-      vol_id: 1004,
-      status: "Inactive",
-      email: "venkatesh@gmail.com",
-      contact: 9988776655,
-    },
-    {
-      id: 5,
-      name: "balaji",
-      vol_id: 1005,
-      status: "Active",
-      email: "balaji@gmail.com",
-      contact: 9876543210,
-    },
-  ];
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchVolunteers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(ENDPOINTS.ADMIN.VOLUNTEERS, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data);
+      }
+    } catch (err) {
+      console.error("Error fetching volunteers:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVolunteers();
+  }, []);
 
   return (
     <div className="py-8">
@@ -71,10 +55,10 @@ function UserSection() {
               <tr key={user.id} className="hover:bg-gray-50 transition">
                 <td className="py-4 px-6 text-sm text-gray-900 font-medium">{user.id}</td>
                 <td className="py-4 px-6 text-sm text-gray-900 font-semibold">
-                  {user.name}
+                  {user.full_name || user.name}
                 </td>
                 <td className="py-4 px-6 text-sm text-gray-700">
-                  {user.vol_id}
+                  {user.vol_id || `ECO-VOL-${user.id}`}
                 </td>
                 <td className="py-4 px-6 text-sm">
                   <span className={`px-3 py-1 rounded-full font-semibold text-xs ${
@@ -82,14 +66,14 @@ function UserSection() {
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-gray-100 text-gray-800'
                   }`}>
-                    {user.status}
+                    {user.status || (user.role === 'admin' ? 'Admin' : 'Volunteer')}
                   </span>
                 </td>
                 <td className="py-4 px-6 text-sm text-gray-700">
                   {user.email}
                 </td>
                 <td className="py-4 px-6 text-sm text-gray-700">
-                  {user.contact}
+                  {user.phone || user.contact || "N/A"}
                 </td>
               </tr>
             ))}

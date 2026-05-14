@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-function RegisteredEventCard({ image, title, location, date }) {
+function RegisteredEventCard({ id, image, title, location, date }) {
   return (
     <div className="group overflow-hidden rounded-[28px] border border-emerald-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
       <div className="relative overflow-hidden">
@@ -18,9 +19,12 @@ function RegisteredEventCard({ image, title, location, date }) {
           <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-emerald-700">
             Confirmed
           </span>
-          <button className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-500">
+          <Link 
+            to={`/events/${id}`}
+            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-500"
+          >
             View
-          </button>
+          </Link>
         </div>
       </div>
     </div>

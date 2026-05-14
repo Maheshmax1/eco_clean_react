@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { ENDPOINTS } from "../../api/constants";
+
 function Login() {
-
-
   const Navigate = useNavigate()
-
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-
-  const Api_url = "https://full-stack-eco-clean.vercel.app/api/auth/login"
-
+  // Clear any old/expired tokens when reaching the login form
+  useEffect(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+  }, []);
 
   const HandleClick = async (e) => {
     e.preventDefault()
     try {
-      const res = await fetch(Api_url, {
+      const res = await fetch(ENDPOINTS.AUTH.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,7 +28,7 @@ function Login() {
         })
       })
       if (res.status != 200) {
-        alert("wrong detail")
+        alert("user detail not found")
         return
       }
       const data = await res.json()
@@ -44,12 +45,12 @@ function Login() {
 
       // navigate to the dashboard and admin
       if (data.role == "admin"){
-        Navigate("/admin")
+        window.location.href = "/admin";
       }else if(data.role == "volunteer"){
-          Navigate("/profile")
-        }else{
-          Navigate("/")
-        }
+        window.location.href = "/profile";
+      }else{
+        window.location.href = "/";
+      }
 
     } catch (err) {
       console.log(err)
@@ -58,38 +59,42 @@ function Login() {
   }
 
   return (
-    <div className="bg-white p-8 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-2">Welcome Back</h2>
-      <p className="text-slate-600 mb-6">
-        Login to view your events and profile
-      </p>
+    <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+      <div className="bg-white p-2 md:p-4 rounded-3xl">
+        <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Welcome Back</h2>
+        <p className="text-slate-400 text-sm mb-8 font-medium">
+          Securely access your EcoClean portal
+        </p>
 
-      <form className="space-y-4">
-        <div>
-          <label className="block mb-1 font-medium">Email</label>
-          <input
-            type="email"
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            placeholder="your.email@example.com"
-            onChange={(e) => { setEmail(e.target.value) }}
+        <form className="space-y-5">
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email Address</label>
+            <input
+              type="email"
+              className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-sm font-bold"
+              placeholder="email@example.com"
+              onChange={(e) => { setEmail(e.target.value) }}
+            />
+          </div>
 
-          />
-        </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Secure Password</label>
+            <input
+              type="password"
+              className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-sm font-bold"
+              placeholder="••••••••"
+              onChange={(e) => { setPassword(e.target.value) }}
+            />
+          </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Password</label>
-          <input
-            type="password"
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            placeholder="Enter password"
-            onChange={(e) => { setPassword(e.target.value) }}
-          />
-        </div>
-
-        <button className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition" onClick={HandleClick}>
-          Login
-        </button>
-      </form>
+          <button 
+            className="w-full bg-emerald-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-500/20 hover:bg-emerald-600 transition-all duration-300 hover:scale-[1.02]" 
+            onClick={HandleClick}
+          >
+            Authenticate
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

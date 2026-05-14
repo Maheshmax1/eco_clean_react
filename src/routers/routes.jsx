@@ -32,10 +32,6 @@ const MainRoutes = createBrowserRouter([
         element:<DetailEvent/>
       },
       {
-        path:"edit-events/:id",
-        element:<EditEvents/>
-      },
-      {
         path: "contact",
         element: <CustomerSupport />,
       },
@@ -44,14 +40,18 @@ const MainRoutes = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: "admin",
-        element: <Admin />,
-      },
-      {
         path: "*",
         element: <div className="p-10 text-center">Page not found</div>,
       },
     ],
+  },
+  {
+    path: "/admin",
+    element: <Admin />,
+  },
+  {
+    path: "/edit-events/:id",
+    element: <EditEvents />, // Keep separate for deep linking
   },
 ]);
 

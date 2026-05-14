@@ -12,6 +12,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 
 import { useNavigate, useParams } from "react-router-dom";
+import { ENDPOINTS } from "../api/constants";
 
 function EditEvents() {
 
@@ -22,9 +23,6 @@ function EditEvents() {
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
-
-  const API_URL =
-    `https://full-stack-eco-clean.vercel.app/api/events/${id}`;
 
   // Validation
   const validationSchema = yup.object({
@@ -114,7 +112,7 @@ function EditEvents() {
         }
 
         // Update Event
-        const response = await fetch(API_URL, {
+        const response = await fetch(ENDPOINTS.EVENTS.UPDATE(id), {
 
           method: "PUT",
 
@@ -169,8 +167,7 @@ function EditEvents() {
     const FetchEvent = async () => {
 
       try {
-
-        const response = await fetch(API_URL);
+        const response = await fetch(ENDPOINTS.EVENTS.DETAIL(id));
 
         const data = await response.json();
 
@@ -220,6 +217,12 @@ function EditEvents() {
     <div className="py-12 bg-white min-h-screen">
 
       <div className="max-w-2xl mx-auto bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl shadow-md p-8 border border-emerald-200">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="mb-6 inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-800 font-bold transition-colors cursor-pointer"
+        >
+          ← Back
+        </button>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
 

@@ -8,7 +8,7 @@ function EventTable({ event }) {
         <h2 className="text-lg font-bold text-white">
           {event.title}
         </h2>
-        <p className="text-emerald-100 text-sm mt-1">{event.volunteers.length} volunteer(s) registered</p>
+        <p className="text-emerald-100 text-sm mt-1">{(event.registrations || event.volunteers || []).length} volunteer(s) registered</p>
       </div>
 
       {/* Table */}
@@ -24,12 +24,12 @@ function EventTable({ event }) {
         </thead>
 
         <tbody className="divide-y divide-gray-200">
-          {event.volunteers.map((volunteer, index) => (
+          {(event.registrations || event.volunteers || []).map((reg, index) => (
             <tr key={index} className="hover:bg-gray-50 transition">
-              <td className="py-4 px-6 text-sm font-semibold text-gray-900">{volunteer.name}</td>
-              <td className="py-4 px-6 text-sm text-gray-700">{volunteer.email}</td>
-              <td className="py-4 px-6 text-sm text-gray-700">{volunteer.phone}</td>
-              <td className="py-4 px-6 text-sm text-gray-700">{volunteer.date}</td>
+              <td className="py-4 px-6 text-sm font-semibold text-gray-900">{reg.user?.full_name || reg.name || "Unknown"}</td>
+              <td className="py-4 px-6 text-sm text-gray-700">{reg.user?.email || reg.email}</td>
+              <td className="py-4 px-6 text-sm text-gray-700">{reg.user?.phone || reg.phone || "N/A"}</td>
+              <td className="py-4 px-6 text-sm text-gray-700">{reg.registration_date ? new Date(reg.registration_date).toLocaleDateString() : (reg.date || "N/A")}</td>
             </tr>
           ))}
         </tbody>

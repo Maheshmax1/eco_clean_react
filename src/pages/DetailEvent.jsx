@@ -1,217 +1,276 @@
-import React, { useContext, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { EventContext } from "../Context/EventContext";
+import { ENDPOINTS } from "../api/constants";
 
 function DetailEvent() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { events } = useContext(EventContext);
+  const safeEvents = Array.isArray(events) ? events : [];
 
   // Find Event
-  const event = events.find((e) => e.id === parseInt(id));
+  const event = safeEvents.find((e) => e.id === parseInt(id));
 
   // Registration State
   const [isRegistered, setIsRegistered] = useState(false);
+  const [participants, setParticipants] = useState([]);
+  const [fetchLoading, setFetchLoading] = useState(false);
+
+  const token = localStorage.getItem("token");
+  const [userEmail, setUserEmail] = useState(localStorage.getItem("user_email"));
+
+  const fetchParticipants = async (email) => {
+    try {
+      // Use detail endpoint which includes registrations
+      const res = await fetch(ENDPOINTS.EVENTS.DETAIL(id));
+      if (res.ok) {
+        const data = await res.json();
+        // The README says EventWithRegistrations contains a 'registrations' array
+        const regs = data.registrations || [];
+        setParticipants(regs);
+        
+        // Check if current user is in participants
+        const currentEmail = email || userEmail;
+        if (currentEmail) {
+          const isUserRegistered = regs.some(p => (
+            p.email === currentEmail || 
+            p.user_email === currentEmail || 
+            (p.user && p.user.email === currentEmail)
+          ));
+          setIsRegistered(isUserRegistered);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching participants:", err);
+    }
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      let currentEmail = userEmail;
+      
+      if (token && !currentEmail) {
+        try {
+          const res = await fetch(ENDPOINTS.USERS.ME, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const userData = await res.json();
+            localStorage.setItem("user_email", userData.email);
+            localStorage.setItem("user_name", userData.full_name);
+            currentEmail = userData.email;
+            setUserEmail(currentEmail);
+          }
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+        }
+      }
+      fetchParticipants(currentEmail);
+    };
+    init();
+  }, [id, token]);
 
   // Event Not Found
   if (!event) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-100">
-        <div className="bg-white p-10 rounded-3xl shadow-2xl text-center">
-          <h2 className="text-4xl font-bold text-red-500 mb-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#f4f6f9]">
+        <div className="bg-white p-10 rounded-xl shadow-lg text-center">
+          <h2 className="text-3xl font-bold text-red-500 mb-4">
             Event Not Found
           </h2>
 
-          <Link
-            to="/events"
-            className="inline-block mt-4 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-full font-semibold transition"
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-block mt-4 bg-[#328457] hover:bg-[#0c8a45] text-white px-8 py-3 rounded-md font-semibold transition-colors cursor-pointer"
           >
-            Back To Events
-          </Link>
+            ← Go Back
+          </button>
         </div>
       </div>
     );
   }
 
   // Join Event
-  const handleJoin = () => {
-    setIsRegistered(true);
+  const handleJoin = async () => {
+    if (!token) {
+      alert("Please login to join the event");
+      return;
+    }
+
+    if (event.status === "completed") {
+      alert("This event has already been completed.");
+      return;
+    }
+
+    setFetchLoading(true);
+    try {
+      const res = await fetch(ENDPOINTS.EVENTS.JOIN(id), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        alert("Successfully joined the event! 🎉");
+        await fetchParticipants();
+        setIsRegistered(true);
+      } else {
+        const errorData = await res.json();
+        alert(errorData.detail || "Failed to join event");
+      }
+    } catch (err) {
+      console.error("Join error:", err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setFetchLoading(false);
+    }
   };
 
   // Leave Event
-  const handleLeave = () => {
-    setIsRegistered(false);
+  const handleLeave = async () => {
+    if (!token) return;
+
+    setFetchLoading(true);
+    try {
+      const res = await fetch(ENDPOINTS.EVENTS.LEAVE(id), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        alert("You have left the event.");
+        await fetchParticipants();
+        setIsRegistered(false);
+      } else {
+        alert("Failed to leave event");
+      }
+    } catch (err) {
+      console.error("Leave error:", err);
+    } finally {
+      setFetchLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-100 py-14 px-4">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
-        {/* LEFT SIDE */}
-        <div className="lg:col-span-2 bg-white rounded-3xl overflow-hidden shadow-2xl border border-emerald-100">
-          {/* Banner */}
-          <div className="relative h-[450px] overflow-hidden">
-            {/* IMAGE */}
-            <img
-              src={event.image_url || "https://via.placeholder.com/1200x500"}
-              alt={event.title}
-              className="w-full h-full object-cover"
+    <div className="min-h-screen bg-[#f4f6f9] text-[#333] font-sans pb-10">
+      {/* Event Section */}
+      <section className="max-w-[1000px] mx-auto pt-10 px-5">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="mb-4 inline-flex items-center gap-2 text-[#2e8b57] hover:text-[#0c8a45] font-bold text-lg transition-colors cursor-pointer"
+        >
+          ← Back
+        </button>
+        <div className="bg-white rounded-xl shadow-[0_8px_20px_rgba(0,0,0,0.08)] grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+          
+          {/* Event Image */}
+          <div id="event-header-image">
+            <img 
+              src={event.image_url || "https://via.placeholder.com/800x600"} 
+              alt={event.title} 
+              className="w-full rounded-lg object-cover" 
             />
-
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/50" />
-
-            {/* STATUS */}
-            <div
-              className={`absolute top-6 left-6 px-5 py-2 rounded-full text-sm font-bold shadow-xl text-white ${
-                event.status === "upcoming"
-                  ? "bg-green-500"
-                  : event.status === "completed"
-                    ? "bg-red-500"
-                    : event.status === "done"
-                      ? "bg-yellow-500"
-                      : "bg-gray-500"
-              }`}
-            >
-              {event.status}
-            </div>
-
-            {/* TEXT */}
-            <div className="absolute bottom-10 left-10 text-white max-w-3xl">
-              <p className="uppercase tracking-[5px] text-sm text-emerald-100 mb-4">
-                ECOCLEAN EVENT
-              </p>
-
-              <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
-                {event.title}
-              </h1>
-
-              <p className="mt-5 text-lg text-emerald-100">
-                Join the community and make the world cleaner and greener 🌿
-              </p>
-            </div>
-          </div>
-
-          {/* CONTENT */}
-          <div className="p-10">
-            {/* INFO CARDS */}
-            <div className="grid md:grid-cols-3 gap-5 mb-12">
-              {/* DATE */}
-              <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 hover:shadow-xl transition duration-300">
-                <p className="text-gray-500 text-sm font-medium">Event Date</p>
-
-                <h3 className="font-bold text-xl text-gray-900 mt-3">
-                  {event.event_date}
-                </h3>
-              </div>
-
-              {/* TIME */}
-              <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 hover:shadow-xl transition duration-300">
-                <p className="text-gray-500 text-sm font-medium">Event Time</p>
-
-                <h3 className="font-bold text-xl text-gray-900 mt-3">
-                  {event.start_time} - {event.end_time}
-                </h3>
-              </div>
-
-              {/* LOCATION */}
-              <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 hover:shadow-xl transition duration-300">
-                <p className="text-gray-500 text-sm font-medium">Location</p>
-
-                <h3 className="font-bold text-xl text-gray-900 mt-3 leading-9">
+            <p className="mt-2.5 font-bold text-[#4f46e5] text-lg flex items-start gap-1">
+              <span>📍 Location:</span> 
+              {event.location && event.location.startsWith("http") ? (
+                <a href={event.location} target="_blank" rel="noopener noreferrer" className="underline hover:text-[#3730a3] break-all ml-1">
+                  View on Map
+                </a>
+              ) : (
+                <a href={`https://maps.google.com/?q=${encodeURIComponent(event.location)}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-[#3730a3] ml-1">
                   {event.location}
-                </h3>
-              </div>
-            </div>
-
-            {/* ABOUT */}
-            <div className="mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                About This Event
-              </h2>
-
-              <p className="text-lg leading-10 text-gray-600">
-                {event.description}
-              </p>
-            </div>
-
-            {/* HIGHLIGHTS */}
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Event Highlights
-              </h2>
-
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
-                  🌱 Community Plantation
-                </div>
-
-                <div className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
-                  ♻️ Recycling Awareness
-                </div>
-
-                <div className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
-                  🧹 Public Cleanup Activities
-                </div>
-
-                <div className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
-                  🎤 Environmental Talks
-                </div>
-              </div>
+                </a>
+              )}
+            </p>
+            
+            <div className="mt-4 flex gap-2">
+              <span className={`px-4 py-1.5 rounded-md text-sm font-bold text-white shadow-sm ${
+                event.status === "upcoming" ? "bg-[#328457]" : 
+                event.status === "completed" ? "bg-red-500" : 
+                event.status === "done" ? "bg-yellow-500" : "bg-gray-500"
+              }`}>
+                {event.status.toUpperCase()}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* RIGHT SIDE */}
-        <div className="space-y-6">
-          {/* REGISTER CARD */}
-          <div className="bg-white rounded-3xl shadow-2xl border border-emerald-100 p-8 sticky top-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">
-              Event Registration
-            </h2>
+          {/* Event Details */}
+          <div className="flex flex-col">
+            <h2 className="mt-0 text-[1.8rem] text-[#2e8b57] font-bold mb-4">{event.title}</h2>
 
-            {!isRegistered ? (
-              <button
-                onClick={handleJoin}
-                className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-4 rounded-2xl font-bold text-lg shadow-xl transition-all duration-300 hover:scale-[1.02]"
-              >
-                Join Event
-              </button>
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-center py-4 rounded-2xl font-bold text-lg">
-                  ✓ Already Registered
+            <p className="font-bold text-[#333] my-1 text-lg">
+              Date: <span className="font-normal text-gray-700">{event.event_date}</span>
+            </p>
+            <p className="font-bold text-[#333] my-1 text-lg">
+              Time: <span className="font-normal text-gray-700">{event.start_time} - {event.end_time}</span>
+            </p>
+
+            <div className="leading-[1.7] my-4 text-gray-700 text-base flex-grow">
+              <p>{event.description}</p>
+            </div>
+
+            <div className="mt-6 mb-6">
+              <h3 className="text-[#2e8b57] text-xl mb-3 border-b border-[#ddd] pb-2 font-bold">
+                👥 Joined Volunteers
+              </h3>
+              
+              {participants.length > 0 ? (
+                <ul className="list-none p-0 flex flex-wrap gap-2.5">
+                  {participants.map((p, index) => {
+                    const isMe = p.email === userEmail || p.user_email === userEmail;
+                    return (
+                      <li key={index} className={`px-4 py-1.5 rounded-full text-sm font-medium border ${
+                        isMe ? "bg-[#e8f5e9] text-[#2e8b57] border-[#3cb371]" : "bg-gray-100 text-gray-700 border-gray-200"
+                      }`}>
+                        {isMe ? "You" : (p.full_name || p.name || "?")}
+                      </li>
+                    )
+                  })}
+                </ul>
+              ) : (
+                <p className="text-gray-500 italic text-sm">No volunteers have joined yet. Be the first!</p>
+              )}
+            </div>
+
+            <div className="mt-auto">
+              {event.status === "completed" ? (
+                <div className="inline-block px-6 py-3 bg-gray-200 text-gray-600 rounded-md text-base font-bold text-center w-full sm:w-auto">
+                  ⚠️ Event Completed
                 </div>
-
-                <button
-                  onClick={handleLeave}
-                  className="w-full border-2 border-red-500 text-red-500 py-4 rounded-2xl font-bold hover:bg-red-50 transition"
+              ) : !isRegistered ? (
+                <button 
+                  onClick={handleJoin}
+                  disabled={fetchLoading}
+                  className="inline-block px-6 py-3 bg-[#328457] text-white rounded-md text-base font-bold hover:bg-[#0c8a45] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md w-full sm:w-auto text-center cursor-pointer border-none"
                 >
-                  Leave Event
+                  {fetchLoading ? "Processing..." : "Click to Join Event"}
                 </button>
-              </div>
-            )}
-
-            {/* ORGANIZER */}
-            <div className="mt-10 pt-8 border-t border-gray-200">
-              <h3 className="text-2xl font-bold mb-5">Organizer</h3>
-
-              <div className="flex items-center gap-4">
-                <img
-                  src="https://i.pravatar.cc/100"
-                  alt="organizer"
-                  className="w-16 h-16 rounded-full object-cover"
-                />
-
-                <div>
-                  <h4 className="font-bold text-lg">EcoClean Team</h4>
-
-                  <p className="text-gray-500">Community Organization</p>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-3 items-center">
+                  <div className="px-5 py-3 bg-[#e8f5e9] text-[#2e8b57] border border-[#3cb371] rounded-md font-bold text-center flex-grow sm:flex-grow-0">
+                    Joined
+                  </div>
+                  <button 
+                    onClick={handleLeave}
+                    disabled={fetchLoading}
+                    className="px-5 py-3 border-2 border-red-500 text-red-500 bg-transparent rounded-md text-base font-bold hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto text-center cursor-pointer"
+                  >
+                    {fetchLoading ? "Processing..." : "Leave Event"}
+                  </button>
                 </div>
-              </div>
+              )}
             </div>
+            
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

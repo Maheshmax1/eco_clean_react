@@ -46,21 +46,23 @@ function About() {
   ];
 
   return (
-    <div className="bg-emerald-50 py-1 px-1">
+    <div className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 min-h-screen pb-20">
       <WorldSection/>
-      {/* Header */}
-      <div className="max-w-6xl mx-auto text-center mb-12">
-        <h2 className="text-4xl font-bold text-emerald-900 mb-4">
-          Our Mission, Vision & Core Values
-        </h2>
+      
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-6 pt-20 mb-24 relative">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-200/30 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl -z-10"></div>
 
-        <div className="w-20 h-1 bg-emerald-700 mx-auto mb-6 rounded"></div>
+        <div className="text-center mb-16">
+          <p className="text-emerald-600 font-black text-xs uppercase tracking-[0.4em] mb-4">Our Legacy</p>
+          <h2 className="text-5xl md:text-8xl font-black text-emerald-950 mb-8 tracking-tighter leading-none">
+            Driving <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">Real Change</span>
+          </h2>
 
-        <div className="bg-emerald-100 p-6 rounded-xl text-slate-700">
-          At EcoClean, we are driven by a shared belief that a cleaner world is
-          a healthier world. Our mission, vision, and values guide every action,
-          campaign, and initiative we undertake to protect our planet and
-          empower people to take responsibility for a greener tomorrow.
+          <div className="bg-white/40 backdrop-blur-xl p-8 md:p-14 rounded-[3rem] text-slate-600 text-xl md:text-2xl font-medium leading-relaxed shadow-2xl shadow-emerald-900/5 border border-white max-w-5xl mx-auto">
+            "At EcoClean, we don't just dream of a cleaner world; we build it. Through relentless action and community-driven initiatives, we are restoring the balance of nature, one mission at a time."
+          </div>
         </div>
       </div>
 
@@ -87,23 +89,29 @@ function About() {
       </div>
 
       <AboutTips />
-      <div>
+      {/* Impact Roadmap */}
+      <div className="max-w-7xl mx-auto px-6 space-y-8">
+        <div className="flex items-center gap-4 mb-12">
+          <h2 className="text-4xl font-black text-emerald-950 tracking-tight">Impact Roadmap</h2>
+          <div className="flex-1 h-[2px] bg-emerald-100"></div>
+        </div>
+
         <AboutImpactSection
-          title="Our Impact This Week"
+          title="Weekly Milestones"
           data={weekData}
-          bgColor="bg-emerald-100"
+          bgColor="bg-transparent"
         />
 
         <AboutImpactSection
-          title="Our Impact This Month"
+          title="Monthly Achievements"
           data={monthData}
-          bgColor="bg-emerald-200"
+          bgColor="bg-emerald-600/5 rounded-[3rem] border border-emerald-100"
         />
 
         <AboutImpactSection
-          title="Our Impact This Year"
+          title="Annual Legacy"
           data={yearData}
-          bgColor="bg-emerald-300"
+          bgColor="bg-transparent"
         />
       </div>
     </div>

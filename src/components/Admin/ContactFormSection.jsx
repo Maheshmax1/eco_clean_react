@@ -1,31 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ContactFormCard from "./ContactFormCard";
+import { ENDPOINTS } from "../../api/constants";
 
 function ContactFormSection() {
-  const contactForms = [
-    {
-      name: "Mahesh",
-      email: "mahesh@gmail.com",
-      message:
-        "I am interested in volunteering for beach cleanup. Please provide more details about the event and how I can participate.",
-    },
-    {
-      name: "Hari",
-      email: "hari@gmail.com",
-      message:
-        "I am interested in volunteering for beach cleanup. Please provide more details about the event and how I can participate.",
-    },
-    {
-      name: "Kamalesh",
-      email: "kamalesh@gmail.com",
-      message:
-        "I am interested in volunteering for beach cleanup. Please provide more details about the event and how I can participate.",
-    },
-  ];
+  const [message, setMessage] = useState([]);
+
+  const fetchMessage = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(ENDPOINTS.ADMIN.MESSAGES, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch message");
+      }
+
+      const data = await res.json();
+
+      console.log("contact message DATA:", data);
+
+      setMessage(data.messages || data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDeleteMessage = async (id) => {
+    if (!window.confirm("Are you sure you want to mark this as solved?")) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(ENDPOINTS.ADMIN.DELETE_MESSAGE(id), {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        setMessage(message.filter(msg => msg.id !== id));
+      }
+    } catch (err) {
+      console.error("Error deleting message:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessage();
+  }, []);
 
   return (
     <div className="py-8">
-      
       {/* Section Header */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -38,12 +67,14 @@ function ContactFormSection() {
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {contactForms.map((form, index) => (
+        {message.map((form) => (
           <ContactFormCard
-            key={index}
+            key={form.id}
+            id={form.id}
             name={form.name}
             email={form.email}
             message={form.message}
+            onDelete={handleDeleteMessage}
           />
         ))}
       </div>

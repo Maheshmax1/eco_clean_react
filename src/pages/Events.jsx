@@ -24,11 +24,11 @@ function Events() {
         <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Join Our Cleanup Events
+          <h1 className="text-5xl md:text-8xl font-black mb-6 tracking-tighter drop-shadow-2xl">
+            Cleanup <span className="text-emerald-400">Events</span>
           </h1>
-          <p className="text-lg md:text-xl mb-6">
-            Together We Make a Difference 🌍
+          <p className="text-lg md:text-2xl mb-10 max-w-2xl font-medium text-emerald-50/90 drop-shadow-lg italic">
+            "Small acts, when multiplied by millions of people, can transform the world." 🌍
           </p>
         </div>
       </section>

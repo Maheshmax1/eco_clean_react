@@ -13,7 +13,7 @@ function ProfileHeader({ user }) {
           <h2 className="text-3xl font-bold">
             Welcome, {user.name}
           </h2>
-          <p className="text-sm mt-1">Volunteer ID: {user.id}</p>
+          <p className="text-sm mt-1">Admin ID: {user.id}</p>
           <p className="text-sm">Email: {user.email}</p>
         </div>
 

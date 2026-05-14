@@ -1,42 +1,14 @@
 import React from "react";
-import ProfileHeader from "../components/admin/ProfileHeader";
-import EventsGrid from "../components/admin/EventsGrid";
+import ProfileHeader from "../Profile_page/ProfileHeader";
+import RegisteredEvents from "../Profile_page/RegisteredEvents";
 
-function Profile() {
-  const user = {
-    name: "hari haran",
-    id: "ECO-VOL-3",
-    email: "hari@gmail.com",
-  };
-
-  const events = [
-    {
-      image: "/images/event1.jpg",
-      title: "Chennai Beach Cleanup Drive 2026",
-      location: "Marina Beach, Chennai",
-      date: "2026-04-26",
-    },
-    {
-      image: "/images/event2.jpg",
-      title: "Save Our River – Cleanup",
-      location: "Adyar River Bank, Chennai",
-      date: "2026-05-11",
-    },
-    {
-      image: "/images/event3.jpg",
-      title: "Green Earth Community Cleanup",
-      location: "Besant Nagar Beach, Chennai",
-      date: "2026-04-05",
-    },
-  ];
-
+function AdminProfile() {
   return (
-    <div>
-      <ProfileHeader user={user} />
-      <EventsGrid events={events} />
+    <div className="bg-emerald-50 min-h-screen rounded-2xl overflow-hidden shadow-lg border border-emerald-100">
+      <ProfileHeader />
+      <RegisteredEvents />
     </div>
   );
 }
 
-export default Profile;
-
+export default AdminProfile;

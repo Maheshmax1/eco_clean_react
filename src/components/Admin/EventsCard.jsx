@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { ENDPOINTS } from "../../api/constants";
 
 function EventCard({ image_url, title, location, date, status, id }) {
   const navigate = useNavigate();
@@ -9,9 +10,7 @@ function EventCard({ image_url, title, location, date, status, id }) {
   // DELETE EVENT
   const DeleteEvent = async (id) => {
     try {
-      const API_URL = `https://full-stack-eco-clean.vercel.app/api/events/${id}`;
-
-      const res = await fetch(API_URL, {
+      const res = await fetch(ENDPOINTS.EVENTS.DELETE(id), {
         method: "DELETE",
 
         headers: {
@@ -42,9 +41,7 @@ function EventCard({ image_url, title, location, date, status, id }) {
   // MARK DONE
   const DoneEvent = async (id) => {
     try {
-      const API_URL = `https://full-stack-eco-clean.vercel.app/api/events/${id}`;
-
-      const res = await fetch(API_URL, {
+      const res = await fetch(ENDPOINTS.EVENTS.UPDATE(id), {
         method: "PUT",
 
         headers: {

@@ -1,37 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import RegisteredEventCard from "./RegisteredEventsCard";
+import { ENDPOINTS } from "../../api/constants";
 
 function RegisteredEvents() {
-  const events = [
-    {
-      id: 1,
-      image: "https://www.voltechgroup.com/assets/image/csr/environment/beachclean/2.jpg",
-      title: "Chennai Beach Cleanup Drive 2026",
-      location: "Marina Beach, Chennai",
-      date: "2026-04-26",
-    },
-    {
-      id: 2,
-      image: "https://media.istockphoto.com/id/136591951/photo/people-picking-up-garbage-in-park.jpg?s=612x612&w=0&k=20&c=qEi1xwB7Caq2voFhpuz4c0euXtNjn1JMjTCZk_Su_P4=",
-      title: "Save Our River - Cleanup",
-      location: "Adyar River Bank, Chennai",
-      date: "2026-05-11",
-    },
-    {
-      id: 3,
-      image: "https://thumbs.dreamstime.com/b/child-picking-plastic-trash-cleaning-nature-kid-clean-up-garbage-outdoor-ecology-concept-environment-day-save-earth-425659315.jpg",
-      title: "Green Earth Community Cleanup",
-      location: "Besant Nagar Beach, Chennai",
-      date: "2026-04-05",
-    },
-    {
-      id: 4,
-      image: "https://assets.theoceancleanup.com/scaled/900x506/app/uploads/2024/11/Medium-231122-Jamaica-Gunboat-Beach-Mangroves-S5-DvdK-11-1.jpg",
-      title: "Community Lake Cleanup & Awareness",
-      location: "Velachery Lake, Chennai",
-      date: "2026-04-11",
-    },
-  ];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMyEvents = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await fetch(ENDPOINTS.USERS.MY_EVENTS, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // README says RegistrationResponse contains 'event'
+          setEvents(data);
+        }
+      } catch (err) {
+        console.error("Error fetching registered events:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMyEvents();
+  }, []);
 
   return (
     <section className="bg-slate-50 py-16 px-6">
@@ -52,8 +50,15 @@ function RegisteredEvents() {
           </div>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {events.map((event) => (
-              <RegisteredEventCard key={event.id} {...event} />
+            {events.map((reg) => (
+              <RegisteredEventCard 
+                key={reg.id} 
+                id={reg.event.id}
+                image={reg.event.image_url}
+                title={reg.event.title}
+                location={reg.event.location}
+                date={reg.event.event_date}
+              />
             ))}
           </div>
         </div>

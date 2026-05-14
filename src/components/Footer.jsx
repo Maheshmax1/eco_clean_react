@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#32965e]  text-slate-200">
+    <footer className="bg-[#1e5d3d] text-emerald-50/80 border-t border-emerald-800">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="space-y-5">
@@ -12,7 +12,7 @@ const Footer = () => {
               <span>🌿</span>
               EcoClean
             </div>
-            <p className="max-w-md text-sm leading-7 text-[#ffffff]">
+            <p className="max-w-md text-sm leading-relaxed text-emerald-100/70">
               EcoClean brings volunteers together for meaningful cleanup events, awareness campaigns, and sustainable community action.
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -21,57 +21,56 @@ const Footer = () => {
 
           <div>
             <h3 className="text-lg font-semibold text-[#ffffff] mb-5">Quick Links</h3>
-            <ul className="space-y-3 text-sm text-[#ffffff] ">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link className="hover:text-[#ffd700] transition" to="/"><b>Home</b></Link>
+                <Link className="hover:text-emerald-400 transition" to="/">Home</Link>
               </li>
               <li>
-                <Link className="hover:text-[#ffd700] transition" to="/about"><b>About</b></Link>
+                <Link className="hover:text-emerald-400 transition" to="/about">About</Link>
               </li>
               <li>
-                <Link className="hover:text-[#ffd700] transition" to="/events"><b>Events</b></Link>
+                <Link className="hover:text-emerald-400 transition" to="/events">Events</Link>
               </li>
               <li>
-                <Link className="hover:text-[#ffd700] transition" to="/contact"><b>Contact</b></Link>
+                <Link className="hover:text-emerald-400 transition" to="/contact">Contact</Link>
               </li>
               <li>
-                <Link className="hover:text-[#ffd700] transition" to="/profile"><b>Profile</b></Link>
+                <Link className="hover:text-emerald-400 transition" to="/profile">Profile</Link>
               </li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold text-[#ffffff] mb-5">Programs</h3>
-            <ul className="space-y-3 text-sm text-[#ffffff] ">
+            <ul className="space-y-3 text-sm">
               <li>
                 <a
-                  className="hover:text-[#ffd700] transition"
+                  className="hover:text-emerald-400 transition"
                   href="https://youtube.com/watch?v=uRhv5kIi7Is"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <b>Clean-up Drives</b>
-                  
+                  Clean-up Drives
                 </a>
               </li>
               <li>
                 <a
-                  className="hover:text-[#ffd700] transition"
+                  className="hover:text-emerald-400 transition"
                   href="https://nskfdc.nic.in/en/content/home/workshops"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <b>Workshops</b>
+                  Workshops
                 </a>
               </li>
               <li>
                 <a
-                  className="hover:text-[#ffd700] transition"
+                  className="hover:text-emerald-400 transition"
                   href="https://www.quantcast.com/wiki/term/awareness-campaign/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <b>Awareness Campaigns</b>
+                  Awareness Campaigns
                 </a>
               </li>
             </ul>
@@ -95,20 +94,17 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-14 border-t border-slate-800 pt-6 text-center text-sm text-[#ffffff]">
-          <b>© 2025{' '}</b>
+        <div className="mt-14 border-t border-emerald-800/50 pt-8 text-center text-xs text-emerald-100/50 uppercase tracking-widest font-bold">
+          © 2026{' '}
           <a
-            className="text-[#ffd700] "
+            className="text-emerald-400 hover:underline"
             href="https://copyright.gov.in/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <b>EcoClean Awareness</b>
-              
+            EcoClean Awareness
           </a>
-          <b>{' '}| All Rights Reserved</b>
-          
-          
+          {' '}| All Rights Reserved
         </div>
       </div>
     </footer>

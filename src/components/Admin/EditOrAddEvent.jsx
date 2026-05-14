@@ -5,9 +5,9 @@ import { EventContext } from "../../Context/EventContext";
 import * as yup from "yup";
 import { useFormik } from "formik";
 
+import { ENDPOINTS } from "../../api/constants";
+
 function EditOrAddEvent({ event }) {
-  const API_URL = "https://full-stack-eco-clean.vercel.app/api/events";
-   
   const {fetchEvents}=useContext(EventContext);
   // Validation
   const UpdateEventForm = yup.object({
@@ -85,8 +85,8 @@ function EditOrAddEvent({ event }) {
         }
 
         // Backend Request
-        const response = await fetch(API_URL, {
-          method: "POST",
+        const response = await fetch(event ? ENDPOINTS.EVENTS.UPDATE(event.id) : ENDPOINTS.EVENTS.CREATE, {
+          method: event ? "PUT" : "POST",
 
           headers: {
             "Content-Type": "application/json",
