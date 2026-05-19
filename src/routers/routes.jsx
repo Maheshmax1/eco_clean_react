@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createHashRouter } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
 import Home from "../pages/Home";
@@ -10,7 +10,7 @@ import Admin from "../pages/Admin";
 import DetailEvent from "../pages/DetailEvent";
 import EditEvents from "../pages/EditEvents";
 
-const MainRoutes = createBrowserRouter([
+const MainRoutes = createHashRouter([
   {
     path: "/",
     element: <MainLayout />,
